@@ -9,7 +9,7 @@ button,input,a.b{font:inherit;padding:7px 12px;margin:6px 6px 0 0;border:1px sol
 <div id="list"></div><p id="err" style="color:#b00020"></p>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 <script>
-const db=supabase.createClient("https://yzqwputgquqlzshpxtcf.supabase.co/rest/v1/","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6cXdwdXRncXVxbHpzaHB4dGNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDIwMzQsImV4cCI6MjEwNzQxODAzNH0.vFL5T7wauWB7MebESnNfPf0k-Zvq2awwdu5zqAifrRQ"),$=i=>document.getElementById(i);
+const db=supabase.createClient("https://yzqwputgquqlzshpxtcf.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6cXdwdXRncXVxbHpzaHB4dGNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDIwMzQsImV4cCI6MjEwNzQxODAzNH0.vFL5T7wauWB7MebESnNfPf0k-Zvq2awwdu5zqAifrRQ"),$=i=>document.getElementById(i);
 const fmt=t=>new Date(t).toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Manila"});
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const g=d=>new Date(d).toISOString().replace(/[-:]|\.\d{3}/g,"");
