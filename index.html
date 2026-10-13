@@ -61,7 +61,7 @@ a{color:var(--g)}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
 <script>
 // ---- EDIT THESE ----
-const SUPABASE_URL="https://YOUR-PROJECT.supabase.co", SUPABASE_ANON_KEY="YOUR-ANON-KEY";
+const SUPABASE_URL="https://yzqwputgquqlzshpxtcf.supabase.co/rest/v1/", SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6cXdwdXRncXVxbHpzaHB4dGNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDIwMzQsImV4cCI6MjEwNzQxODAzNH0.vFL5T7wauWB7MebESnNfPf0k-Zvq2awwdu5zqAifrRQ";
 const GCASH={name:"ACCOUNT NAME", number:"09XX XXX XXXX"};
 const PAGE_URL="https://m.me/YOUR-PAGE";   // where weddings and big events message you
 const OPEN=7, CLOSE=20;   // hours, Manila time
@@ -72,7 +72,7 @@ const T=()=>types.find(x=>x.name===$("type").value);
 const msg=t=>$("msg").textContent=t||"";
 const peso=n=>"₱"+n.toLocaleString("en-PH");
 $("day").min=new Date().toISOString().slice(0,10);
-function times(){
+function times(){  
   const t=T(),el=$("tm");el.innerHTML="";
   for(let m=OPEN*60;m+t.hours*60<=CLOSE*60;m+=30){
     const h=Math.floor(m/60),mm=m%60,o=document.createElement("option");
