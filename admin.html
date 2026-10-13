@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bookings admin</title>
+<style>body{font:15px/1.4 system-ui;max-width:760px;margin:24px auto;padding:0 16px;color:#16202a}
+.row{border:1px solid #d5dad6;border-radius:6px;padding:12px;margin:10px 0}.row b{font-size:16px}
+button,input,a.b{font:inherit;padding:7px 12px;margin:6px 6px 0 0;border:1px solid #bbb;border-radius:4px;background:#fff;cursor:pointer;text-decoration:none;color:inherit;display:inline-block}
+.ok{background:#0b5fff;color:#fff;border-color:#0b5fff}.st{color:#5d6b78}</style></head><body>
+<h1>Bookings</h1>
+<div id="login"><input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Password"><button id="in">Sign in</button></div>
+<div id="list"></div><p id="err" style="color:#b00020"></p>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
+<script>
+const db=supabase.createClient("https://yzqwputgquqlzshpxtcf.supabase.co/rest/v1/","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6cXdwdXRncXVxbHpzaHB4dGNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NDIwMzQsImV4cCI6MjEwNzQxODAzNH0.vFL5T7wauWB7MebESnNfPf0k-Zvq2awwdu5zqAifrRQ"),$=i=>document.getElementById(i);
+const fmt=t=>new Date(t).toLocaleString("en-PH",{dateStyle:"medium",timeStyle:"short",timeZone:"Asia/Manila"});
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const g=d=>new Date(d).toISOString().replace(/[-:]|\.\d{3}/g,"");
+$("in").onclick=async()=>{const {error}=await db.auth.signInWithPassword({email:$("em").value,password:$("pw").value});
+  if(error)$("err").textContent=error.message;else load()};
+async function setStatus(id,s){await db.from("bookings").update({status:s}).eq("id",id);load()}
+async function load(){
+  const {data,error}=await db.from("bookings").select("*").in("status",["awaiting_verification","pending","confirmed"]).order("slot");
+  if(error)return;$("login").style.display="none";
+  for(const b of data)if(b.receipt_path){const {data:u}=await db.storage.from("receipts").createSignedUrl(b.receipt_path,3600);b.url=u&&u.signedUrl}
+  $("list").innerHTML=data.map(b=>{
+    const cal=`https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(b.type+" ("+b.pax+" pax) - "+b.name)}&details=${encodeURIComponent(b.contact+" | "+b.decor+(b.preorder?"\nPre-order: "+b.preorder:""))}&dates=${g(b.slot)}/${g(b.ends_at)}`;
+    return `<div class="row"><b>${fmt(b.slot)}</b> · ${b.type} · ${b.pax} pax · ${b.area}${b.exclusive?" · exclusive":""}<br>${esc(b.name)} · ${esc(b.contact)}
+    <br><span class="st">${esc(b.decor)} · min spend ₱${b.min_spend} · downpayment ₱${b.due} · ${b.status.replace("_"," ")} · requested ${fmt(b.created_at)}</span><br>${b.preorder?`<div style="white-space:pre-line">Pre-order: ${esc(b.preorder)}</div>`:""}
+    ${b.url?`<a class="b" target="_blank" href="${b.url}">View receipt</a>`:""}
+    ${b.status==="awaiting_verification"?`<button class="ok" onclick="setStatus('${b.id}','confirmed')">Payment received, confirm</button><button onclick="setStatus('${b.id}','rejected')">Reject</button>`:""}
+    ${b.status==="pending"?`<button onclick="setStatus('${b.id}','rejected')">Cancel (unpaid)</button>`:""}
+    ${b.status==="confirmed"?`<a class="b" target="_blank" href="${cal}">Add to Google Calendar</a><button onclick="setStatus('${b.id}','rejected')">Cancel</button>`:""}</div>`}).join("")||"<p>No active bookings.</p>";
+}
+load();
+</script></body></html>
