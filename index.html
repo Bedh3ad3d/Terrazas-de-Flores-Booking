@@ -85,6 +85,10 @@ function info(){
   $("plan").classList.toggle("hide",!big);$("book").classList.toggle("hide",big);
   if(big){$("info").textContent="";return}
   $("pax").min=t.min_pax;
+  if(t.name==="Photoshoot"){
+    const tot=2000+Math.max(0,p-6)*100;
+    $("info").textContent=`Photoshoot fee ${peso(2000)}, inclusive of up to 6 guests. Each additional guest is ${peso(100)}. Total: ${peso(tot)}. Downpayment ${peso(1000)}, deducted from your bill; refundable only if you cancel at least 2 hours before. Tables are held 30 minutes after your arrival time. Late arrival counts toward your time.`;
+    return}
   const setup=$("decor").value!=="No set-up",rate=setup?Math.max(t.per_pax,600):t.per_pax,tot=rate*p,due=tot?Math.ceil(tot*.3):(p>8?1500:0);
   let s=`${t.min_pax}–${t.max_pax} guests. `;
   if(t.exclusive)s+=`Exclusive use of your chosen area for ${t.hours} hours at ${peso(rate)} per guest, fully consumable. Total bill: ${peso(tot)}. Buffet set-up ${t.buffet?"allowed":"not allowed"}. Lechon corkage ₱1,500; other dishes ₱1,000 each; cakes not included. Staying past closing is ₱1,000 per hour. `;
@@ -95,7 +99,7 @@ function info(){
 }
 $("type").onchange=()=>{$("area").value=T().area||"Main cafe";times();info()};$("pax").oninput=info;$("decor").onchange=info;
 (async()=>{
-  const {data,error}=await db.from("reservation_types").select("*").order("per_pax");types=data||[];
+  const {data,error}=await db.from("reservation_types").select("*").order("per_pax");types=const {data,error}=await db.from("reservation_types").select("*").order("per_pax");types=(data||[]).sort((a,b)=>(a.name==="Photoshoot")-(b.name==="Photoshoot"));
   if(error||!types.length){console.error(error);msg(SUPABASE_URL.includes("YOUR-")?"Setup incomplete: add your Supabase URL and key to index.html.":"We couldn't load the reservation options. Please try again or message our page.");return}
   $("type").innerHTML=types.map(t=>`<option>${t.name}</option>`).join("");$("planlink").href=PAGE_URL;$("area").value=T().area||"Main cafe";times();info();
 })();
@@ -110,7 +114,7 @@ $("book").onclick=async()=>{
   if(error){msg(error.message.includes("PRIOR_RESERVATION")?"That time already has a prior reservation. Please choose another time.":error.message.includes("AREA_FULL")?"That area is full at that time. Please choose another time or area.":error.message.includes("WEDDING_MESSAGE")?"Weddings are planned with our team. Please message our page.":error.message);return}
   bid=data.id;$("s1").classList.add("hide");
   if(data.due===0){$("done").textContent="Reservation confirmed. See you then!";$("s3").classList.remove("hide");return}
-  $("amt").textContent=peso(data.due);$("calc").innerHTML=data.min_spend?`Total bill <b>${peso(data.min_spend)}</b> · Downpayment (30%) <b>${peso(data.due)}</b> · Balance on the day <b>${peso(data.min_spend-data.due)}</b>`:`Downpayment <b>${peso(data.due)}</b>, deducted from your bill.`;$("gname").textContent=GCASH.name;$("gnum").textContent=GCASH.number;
+  $("amt").textContent=peso(data.due);$("calc").innerHTML=data.min_spend?`Total bill <b>${peso(data.min_spend)}</b> · Downpayment <b>${peso(data.due)}</b> · Balance on the day <b>${peso(data.min_spend-data.due)}</b>`:`Downpayment <b>${peso(data.due)}</b>, deducted from your bill.`;$("gname").textContent=GCASH.name;$("gnum").textContent=GCASH.number;
   $("s2").classList.remove("hide");
 };
 $("paid").onclick=async()=>{
