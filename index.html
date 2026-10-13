@@ -115,7 +115,7 @@ $("book").onclick=async()=>{
 };
 $("paid").onclick=async()=>{
   msg();const f=$("shot").files[0];if(!f){msg("Choose your receipt screenshot first.");return}
-  $("paid").disabled=true;const path=`${bid}.${(f.name.split(".").pop()||"jpg").toLowerCase()}`;
+  $("paid").disabled=true;const path=`${bid}-${Date.now()}.${(f.name.split(".").pop()||"jpg").toLowerCase()}`;
   const up=await db.storage.from("receipts").upload(path,f);
   if(up.error){msg("Upload failed: "+up.error.message);$("paid").disabled=false;return}
   const {data}=await db.rpc("submit_payment",{p_id:bid,p_path:path});
